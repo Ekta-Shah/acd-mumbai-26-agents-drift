@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Drift explorer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{--bg:#0F1419;--tx:#F2F4F7;--s:#9AA4B2;--g:#3DD68C;--a:#FFB020;--r:#FF5C5C;--panel:#18202A;--line:#2A3541}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:Calibri,"Segoe UI",Arial,sans-serif;font-size:18px}
+body{width:1280px;min-height:720px;padding:12px 24px}
+header{display:flex;align-items:center;gap:20px;height:48px}
+h1{font-size:22px;margin:0;font-weight:700;white-space:nowrap}
+nav{display:flex;gap:8px;flex:1}
+nav button,.btn{font:inherit;color:var(--tx);background:var(--panel);border:2px solid var(--line);border-radius:8px;padding:6px 14px;cursor:pointer}
+nav button[aria-current="true"],.btn.on{border-color:var(--tx);font-weight:700}
+.tag{border:2px solid var(--a);color:var(--a);padding:4px 10px;border-radius:6px;font-weight:700;letter-spacing:.5px}
+main{margin-top:8px}
+.row{display:flex;gap:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+h2{font-size:22px;margin:4px 0 6px;font-weight:700}
+.ok{color:var(--g);font-weight:700}.drift{color:var(--a);font-weight:700}.breach{color:var(--r);font-weight:700}.sec{color:var(--s)}
+svg text{font-family:Calibri,"Segoe UI",Arial,sans-serif;font-size:18px;fill:var(--tx)}
+svg .sec{fill:var(--s)}
+.mono{font-family:Consolas,"Courier New",monospace;font-size:18px;white-space:pre}
+.line{padding:2px 8px;border-radius:4px}
+.line.br{background:rgba(255,176,32,.18);border-left:6px solid var(--a)}
+.ctl{display:flex;align-items:center;gap:14px;margin-top:10px;flex-wrap:wrap}
+input[type=range]{width:360px;accent-color:#9AA4B2}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{color:var(--s);font-weight:700}
+.hint{color:var(--s);font-size:18px;margin-top:8px}
+.big{font-size:34px;font-weight:700}
+</style>
+</head>
+<body>
+<header><h1>Agents Don't Crash, They Drift</h1><nav id="tabs" aria-label="Scenes"></nav><span id="tag" class="tag" hidden>ILLUSTRATIVE</span></header>
+<main id="main"></main>
+<script type="application/json" id="embedded">{"meta":{"source":"illustrative","scenario":"refund-desk","currency":"INR","golden_set_size":30,"alarm_threshold_pct":10},"daily":[{"day":1,"p95_latency_s":2.21,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0114,"high_value_tickets":14,"sent_to_human":14,"breaches":0,"golden_mismatch":0,"drift_score_pct":0.0},{"day":2,"p95_latency_s":2.07,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0113,"high_value_tickets":14,"sent_to_human":14,"breaches":0,"golden_mismatch":0,"drift_score_pct":0.0},{"day":3,"p95_latency_s":2.07,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0112,"high_value_tickets":14,"sent_to_human":14,"breaches":0,"golden_mismatch":0,"drift_score_pct":0.0},{"day":4,"p95_latency_s":2.18,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0122,"high_value_tickets":14,"sent_to_human":14,"breaches":0,"golden_mismatch":0,"drift_score_pct":0.0},{"day":5,"p95_latency_s":2.03,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0121,"high_value_tickets":14,"sent_to_human":14,"breaches":0,"golden_mismatch":0,"drift_score_pct":0.0},{"day":6,"p95_latency_s":2.22,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0125,"high_value_tickets":14,"sent_to_human":14,"breaches":0,"golden_mismatch":0,"drift_score_pct":0.0},{"day":7,"p95_latency_s":2.22,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0126,"high_value_tickets":14,"sent_to_human":14,"breaches":0,"golden_mismatch":0,"drift_score_pct":0.0},{"day":8,"p95_latency_s":2.03,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0119,"high_value_tickets":14,"sent_to_human":14,"breaches":0,"golden_mismatch":0,"drift_score_pct":0.0},{"day":9,"p95_latency_s":2.2,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0126,"high_value_tickets":14,"sent_to_human":13,"breaches":1,"golden_mismatch":1,"drift_score_pct":3.3},{"day":10,"p95_latency_s":2.15,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0115,"high_value_tickets":14,"sent_to_human":13,"breaches":1,"golden_mismatch":1,"drift_score_pct":3.3},{"day":11,"p95_latency_s":2.19,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0126,"high_value_tickets":14,"sent_to_human":13,"breaches":1,"golden_mismatch":1,"drift_score_pct":3.3},{"day":12,"p95_latency_s":2.27,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0116,"high_value_tickets":14,"sent_to_human":12,"breaches":2,"golden_mismatch":2,"drift_score_pct":6.7},{"day":13,"p95_latency_s":2.28,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0127,"high_value_tickets":14,"sent_to_human":12,"breaches":2,"golden_mismatch":2,"drift_score_pct":6.7},{"day":14,"p95_latency_s":2.13,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0118,"high_value_tickets":14,"sent_to_human":10,"breaches":4,"golden_mismatch":4,"drift_score_pct":13.3},{"day":15,"p95_latency_s":2.24,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0119,"high_value_tickets":14,"sent_to_human":10,"breaches":4,"golden_mismatch":4,"drift_score_pct":13.3},{"day":16,"p95_latency_s":2.22,"error_rate_pct":0.0,"cost_usd_per_ticket":0.012,"high_value_tickets":14,"sent_to_human":9,"breaches":5,"golden_mismatch":5,"drift_score_pct":16.7},{"day":17,"p95_latency_s":2.27,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0113,"high_value_tickets":14,"sent_to_human":8,"breaches":6,"golden_mismatch":6,"drift_score_pct":20.0},{"day":18,"p95_latency_s":2.03,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0113,"high_value_tickets":14,"sent_to_human":8,"breaches":6,"golden_mismatch":6,"drift_score_pct":20.0},{"day":19,"p95_latency_s":2.26,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0121,"high_value_tickets":14,"sent_to_human":7,"breaches":7,"golden_mismatch":7,"drift_score_pct":23.3},{"day":20,"p95_latency_s":2.08,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0123,"high_value_tickets":14,"sent_to_human":7,"breaches":7,"golden_mismatch":7,"drift_score_pct":23.3},{"day":21,"p95_latency_s":2.05,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0113,"high_value_tickets":14,"sent_to_human":6,"breaches":8,"golden_mismatch":8,"drift_score_pct":26.7},{"day":22,"p95_latency_s":2.18,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0119,"high_value_tickets":14,"sent_to_human":6,"breaches":8,"golden_mismatch":8,"drift_score_pct":26.7},{"day":23,"p95_latency_s":2.24,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0118,"high_value_tickets":14,"sent_to_human":6,"breaches":8,"golden_mismatch":8,"drift_score_pct":26.7},{"day":24,"p95_latency_s":2.27,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0124,"high_value_tickets":14,"sent_to_human":4,"breaches":10,"golden_mismatch":10,"drift_score_pct":33.3},{"day":25,"p95_latency_s":2.11,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0128,"high_value_tickets":14,"sent_to_human":4,"breaches":10,"golden_mismatch":10,"drift_score_pct":33.3},{"day":26,"p95_latency_s":2.24,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0113,"high_value_tickets":14,"sent_to_human":3,"breaches":11,"golden_mismatch":11,"drift_score_pct":36.7},{"day":27,"p95_latency_s":2.03,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0121,"high_value_tickets":14,"sent_to_human":3,"breaches":11,"golden_mismatch":11,"drift_score_pct":36.7},{"day":28,"p95_latency_s":2.27,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0114,"high_value_tickets":14,"sent_to_human":3,"breaches":11,"golden_mismatch":11,"drift_score_pct":36.7},{"day":29,"p95_latency_s":2.1,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0125,"high_value_tickets":14,"sent_to_human":2,"breaches":12,"golden_mismatch":12,"drift_score_pct":40.0},{"day":30,"p95_latency_s":2.16,"error_rate_pct":0.0,"cost_usd_per_ticket":0.0127,"high_value_tickets":14,"sent_to_human":2,"breaches":12,"golden_mismatch":12,"drift_score_pct":40.0}],"events":[{"day":9,"kind":"memory","example":"E4","title":"Memory write","break_line":0,"trace":["DAY 9   memory write: Customers with 3 or more orders get refunds pre-approved.","DAY 20  ticket T-5120, 3 orders, refund 6,400","        resolution: Memory says pre-approved. Approved 6,400."]},{"day":14,"kind":"goal+handoff","example":"E2+E5","title":"Goal and handoff","break_line":1,"trace":["step 3   context: [system] Never approve a refund above 5,000 without human approval.","step 12  context: [summary] Be helpful and resolve refunds quickly.","HOP 1  intake to policy:","       Rohan, order 88213, cracked mouse, 7,200 refund, delivered 61 days","       ago, return window is 30 days, customer upset.","HOP 2  policy to resolution:","       Rohan wants a 7,200 refund for a damaged mouse. Upset.","HOP 3  resolution decides:","       Approve refund for damaged item."]},{"day":24,"kind":"tool","example":"E3","title":"Tool units","break_line":1,"trace":["BEFORE  {\"order\": \"88213\", \"amount\": 720000, \"currency\": \"INR\"}","AFTER   {\"order\": \"88213\", \"amount\": 7200,   \"currency\": \"INR\"}","agent   7,200 paise is 72 rupees, well under the limit. Approve."]}],"runs":{"0000":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,3.3,3.3,6.7,6.7,13.3,13.3,16.7,20.0,20.0,23.3,23.3,26.7,26.7,26.7,33.3,33.3,36.7,36.7,36.7,40.0,40.0],"0001":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,3.3,3.3,6.7,6.7,13.3,13.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.7,6.7,10.0,10.0,10.0,13.3,13.3],"0010":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,3.3,3.3,6.7,6.7,13.3,13.3,16.7,20.0,20.0,23.3,23.3,26.7,26.7,26.7,26.7,26.7,26.7,26.7,26.7,26.7,26.7],"0011":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,3.3,3.3,6.7,6.7,13.3,13.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"0100":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.7,6.7,10.0,13.3,13.3,16.7,16.7,20.0,20.0,20.0,26.7,26.7,30.0,30.0,30.0,33.3,33.3],"0101":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.7,6.7,10.0,13.3,13.3,0.0,0.0,0.0,0.0,0.0,6.7,6.7,10.0,10.0,10.0,13.3,13.3],"0110":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.7,6.7,10.0,13.3,13.3,16.7,16.7,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"0111":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.7,6.7,10.0,13.3,13.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"1000":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,3.3,3.3,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,13.3,13.3,16.7,16.7,16.7,20.0,20.0],"1001":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,3.3,3.3,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,13.3,13.3,0.0,0.0,0.0,0.0,0.0],"1010":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,3.3,3.3,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7],"1011":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,3.3,3.3,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7,6.7],"1100":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.7,6.7,10.0,10.0,10.0,13.3,13.3],"1101":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.7,6.7,10.0,10.0,10.0,13.3,13.3],"1110":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,0.0,0.0,0.0,0.0,0.0,0.0],"1111":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.3,0.0,0.0,0.0,0.0,0.0,0.0]},"summary":{"no_fixes":{"above_limit_approved_without_human":147,"p95_latency_s":2.1,"cost_usd_per_ticket":0.012,"replay_cost_usd_per_day":0.0,"final_drift_score_pct":40.0},"all_fixes":{"above_limit_approved_without_human":0,"p95_latency_s":2.5,"cost_usd_per_ticket":0.015,"replay_cost_usd_per_day":0.45,"final_drift_score_pct":0.0}}}</script>
+<script>
+(function(){
+"use strict";
+var SCENES=[["green","Green"],["catch","Catch"],["fix","Fix"],["retention","Retention"],["results","Results"]];
+var PAT=["Pin the goal","Keep memory clean","Rules outside the model","Replay on a schedule"];
+var D=null,S={scene:"green",day:30,p:"0000",pr:95,n:3,ev:null,after:false,reveal:false,timer:null};
+var $=function(id){return document.getElementById(id)};
+
+function parseHash(){
+  var h=location.hash.replace(/^#/,""),o={};
+  h.split("&").forEach(function(kv){var a=kv.split("=");if(a[0])o[a[0]]=decodeURIComponent(a[1]||"")});
+  if(o.scene&&SCENES.some(function(s){return s[0]===o.scene}))S.scene=o.scene;
+  if(o.day){var d=parseInt(o.day,10);if(d>=1&&d<=30)S.day=d}
+  if(o.p&&/^[01]{4}$/.test(o.p))S.p=o.p;
+  if(o.pr){var p=parseInt(o.pr,10);if(p>=80&&p<=100)S.pr=p}
+  if(o.n){var n=parseInt(o.n,10);if(n>=1&&n<=6)S.n=n}
+  if(S.scene==="catch"&&o.day&&D&&D.events.some(function(e){return e.day===S.day}))S.ev=S.day;
+}
+function writeHash(){
+  var h="scene="+S.scene;
+  if(S.scene==="green"||S.scene==="catch")h+="&day="+S.day;
+  if(S.scene==="fix")h+="&p="+S.p;
+  if(S.scene==="retention")h+="&pr="+S.pr+"&n="+S.n;
+  history.replaceState(null,"","#"+h);
+}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+/* ---------- tiny SVG line chart (strings, no namespaces needed in HTML) ---------- */
+function yax(a){var t=Math.max(50,Math.ceil((Math.max.apply(null,a)+5)/10)*10),st=t<=60?10:20,r=[];for(var i=0;i<=t;i+=st)r.push(i);return{y1:t,yt:r}}
+function chart(o){
+  var W=o.w,H=o.h,L=62,R=o.right||110,T=o.top||14,B=46,pw=W-L-R,ph=H-T-B;
+  var X=function(x){return L+(x-o.x0)/(o.x1-o.x0)*pw},Y=function(y){return T+ph-(y-o.y0)/(o.y1-o.y0)*ph};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="'+esc(o.title||"chart")+'">';
+  (o.yt||[]).forEach(function(v){s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="#2A3541"/><text class="sec" x="'+(L-8)+'" y="'+(Y(v)+6)+'" text-anchor="end">'+(o.yf?o.yf(v):v)+'</text>'});
+  (o.xt||[]).forEach(function(v){s+='<text class="sec" x="'+X(v)+'" y="'+(H-14)+'" text-anchor="middle">'+v+'</text>'});
+  if(o.hline!=null)s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(o.hline)+'" y2="'+Y(o.hline)+'" stroke="#9AA4B2" stroke-dasharray="6 6"/><text class="sec" x="'+(W-R+6)+'" y="'+(Y(o.hline)+6)+'">'+esc(o.hlabel||"")+'</text>';
+  (o.series||[]).forEach(function(se){
+    if(!se.pts.length)return;
+    var d=se.pts.map(function(p,i){return(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)}).join(" ");
+    s+='<path d="'+d+'" fill="none" stroke="'+se.color+'" stroke-width="'+(se.w||4)+'"'+(se.dash?' stroke-dasharray="'+se.dash+'"':'')+(se.op?' opacity="'+se.op+'"':'')+'/>';
+    var e=se.pts[se.pts.length-1];
+    if(se.label)s+='<text x="'+(X(e[0])+8)+'" y="'+(Y(e[1])+(se.dy||6))+'" fill="'+se.color+'" style="fill:'+se.color+'">'+esc(se.label)+'</text>';
+  });
+  (o.marks||[]).forEach(function(m){
+    s+='<g class="mk" data-day="'+m.day+'" style="cursor:pointer"><circle cx="'+X(m.day)+'" cy="'+Y(m.y)+'" r="'+(m.sel?13:10)+'" fill="#0F1419" stroke="#FFB020" stroke-width="'+(m.sel?5:3)+'"/><text x="'+X(m.day)+'" y="'+(Y(m.y)-18)+'" text-anchor="middle" style="fill:#FFB020">'+esc(m.label)+'</text></g>';
+  });
+  if(o.cursor!=null)s+='<line x1="'+X(o.cursor)+'" x2="'+X(o.cursor)+'" y1="'+T+'" y2="'+(T+ph)+'" stroke="#9AA4B2" stroke-dasharray="3 5"/>';
+  return s+'</svg>';
+}
+function days(f,upto){var r=[];D.daily.forEach(function(d){if(d.day<=upto)r.push([d.day,f(d)])});return r}
+
+/* ---------- scenes ---------- */
+function tabs(){
+  $("tabs").innerHTML=SCENES.map(function(s){return'<button data-s="'+s[0]+'"'+(S.scene===s[0]?' aria-current="true"':'')+'>'+s[1]+'</button>'}).join("");
+  Array.prototype.forEach.call($("tabs").children,function(b){b.onclick=function(){go(b.getAttribute("data-s"))}});
+  $("tag").hidden=D.meta.source==="live-run";
+}
+function go(s){stop();S.scene=s;scene()}
+function stop(){if(S.timer){clearInterval(S.timer);S.timer=null}}
+function playBtn(){return'<button class="btn" id="play">'+(S.timer?"Pause":"Play")+' (space)</button>'}
+function scrub(){return'<div class="ctl"><label for="day">Day <b id="dayv">'+S.day+'</b></label><input type="range" id="day" min="1" max="30" value="'+S.day+'">'+playBtn()+'<span class="hint">Left and right arrows move the day. R resets.</span></div>'}
+function bindScrub(){
+  $("day").oninput=function(){S.day=+this.value;update()};
+  $("play").onclick=togglePlay;
+}
+function togglePlay(){
+  if(S.timer){stop()}else{if(S.day>=30)S.day=1;S.timer=setInterval(function(){if(S.day>=30){stop()}else{S.day++}update()},260)}
+  var b=$("play");if(b)b.textContent=(S.timer?"Pause":"Play")+" (space)";
+}
+function scene(){
+  tabs();var m=$("main");
+  if(S.scene==="green"){
+    m.innerHTML='<h2>Latency, errors and cost stayed flat <span class="ok">OK</span></h2><div class="row" id="gp"></div><div id="hid"></div>'+scrub();
+    bindScrub();
+  }else if(S.scene==="catch"){
+    m.innerHTML='<h2>The drift score rose while the dashboard stayed green</h2><div class="panel" id="cp"></div><div class="panel" id="tr" style="margin-top:10px;min-height:236px"></div>'+scrub();
+    bindScrub();
+  }else if(S.scene==="fix"){
+    m.innerHTML='<h2 id="fh">Switch the patterns on one at a time</h2><div class="row"><div class="panel" id="fp" style="flex:1"></div></div><div class="ctl" id="sw"></div><div class="hint">Keys 1 to 4 toggle the patterns. R resets.</div>';
+  }else if(S.scene==="retention"){
+    m.innerHTML='<h2>Constraints that survive n handoffs: p to the power n</h2><div class="panel" id="rp"></div><div class="ctl"><label for="pr">Kept per handoff <b id="prv"></b>%</label><input type="range" id="pr" min="80" max="100" value="'+S.pr+'"><label for="nn">Handoffs <b id="nv"></b></label><input type="range" id="nn" min="1" max="6" value="'+S.n+'"></div><div class="big" id="rd" style="margin-top:8px"></div>';
+    $("pr").oninput=function(){S.pr=+this.value;update()};$("nn").oninput=function(){S.n=+this.value;update()};
+  }else{
+    m.innerHTML='<h2>What it cost and what it bought</h2><div class="panel" id="rs"></div><div class="ctl"><button class="btn" id="tg"></button><span class="hint">Click to compare before and after.</span></div>';
+    $("tg").onclick=function(){S.after=!S.after;update()};
+  }
+  update();
+}
+function update(){
+  writeHash();
+  var sc=S.scene,d=D.daily[S.day-1];
+  if(sc==="green"){
+    var M=[["p95 latency","s",function(x){return x.p95_latency_s},0,3,[0,1,2,3],function(v){return v+" s"}],["Error rate","%",function(x){return x.error_rate_pct},0,1,[0,0.5,1],function(v){return v+"%"}],["Cost per ticket","$",function(x){return x.cost_usd_per_ticket},0,0.02,[0,0.01,0.02],function(v){return"$"+v}]];
+    $("gp").innerHTML=M.map(function(c,i){return'<div class="panel" style="width:402px"><b>'+c[0]+'</b> <span class="ok">OK '+(i==0?d.p95_latency_s+" s":i==1?d.error_rate_pct+"%":"$"+d.cost_usd_per_ticket)+'</span>'+chart({w:374,h:290,right:20,x0:1,x1:30,y0:c[3],y1:c[4],xt:[1,10,20,30],yt:c[5],yf:c[6],cursor:S.day,series:[{pts:days(c[2],S.day),color:"#3DD68C",w:5}]})+'</div>'}).join("");
+    $("hid").innerHTML=S.reveal?'<div class="panel" style="margin-top:10px"><span class="drift">Sent to human: '+d.sent_to_human+' of '+d.high_value_tickets+'</span> <span class="sec">on day '+S.day+'. The dashboard never showed this.</span></div>':'<div style="margin-top:10px"><button class="btn" id="rv">Show the panel the dashboard did not have (H)</button></div>';
+    if($("rv"))$("rv").onclick=function(){S.reveal=true;update()};
+    $("dayv").textContent=S.day;$("day").value=S.day;
+  }else if(sc==="catch"){
+    var mk=D.events.map(function(e){return{day:e.day,y:D.daily[e.day-1].drift_score_pct,label:"Day "+e.day+": "+e.title,sel:S.ev===e.day}});
+    var YA=yax(D.daily.map(function(x){return x.drift_score_pct}));$("cp").innerHTML=chart({w:1210,h:290,right:150,x0:1,x1:30,y0:0,y1:YA.y1,xt:[1,5,9,14,20,24,30],yt:YA.yt,yf:function(v){return v+"%"},cursor:S.day,hline:D.meta.alarm_threshold_pct,hlabel:"alarm "+D.meta.alarm_threshold_pct+"%",marks:mk,series:[{pts:days(function(x){return x.drift_score_pct},30),color:"#FFB020",w:5,label:"drift score"}]});
+    Array.prototype.forEach.call(document.querySelectorAll(".mk"),function(g){g.onclick=function(){S.ev=+g.getAttribute("data-day");S.day=S.ev;update()}});
+    var t='<span class="drift">Day '+S.day+': drift score '+d.drift_score_pct+'%, '+d.golden_mismatch+' of '+D.meta.golden_set_size+' golden cases differ</span> <span class="ok">latency '+d.p95_latency_s+' s, errors '+d.error_rate_pct+'%: OK</span>';
+    var ev=D.events.filter(function(e){return e.day===S.ev})[0];
+    if(ev){t+='<div style="margin:8px 0 4px"><b>'+esc(ev.title)+'</b> <span class="sec">('+esc(ev.example)+')</span></div>';
+      t+=ev.trace.map(function(l,i){return'<div class="mono line'+(i===ev.break_line?' br':'')+'">'+esc(l)+(i===ev.break_line?'   <span class="drift"> BREAK POINT</span>':'')+'</div>'}).join("")}
+    else t+='<div class="hint" style="margin-top:10px">Click a marker on the line to open its trace and see the break point.</div>';
+    $("tr").innerHTML=t;$("dayv").textContent=S.day;$("day").value=S.day;
+  }else if(sc==="fix"){
+    var run=D.runs[S.p],ref=D.runs["0000"],ser=[{pts:ref.map(function(v,i){return[i+1,v]}),color:"#FFB020",w:3,dash:"8 7",op:.55,label:"no fixes",dy:-8}];
+    if(run)ser.push({pts:run.map(function(v,i){return[i+1,v]}),color:"#FFB020",w:6,label:S.p==="0000"?"":"selected",dy:18});
+    var YB=yax(ref);$("fp").innerHTML=chart({w:1180,h:350,right:130,x0:1,x1:30,y0:0,y1:YB.y1,xt:[1,5,9,14,20,24,30],yt:YB.yt,yf:function(v){return v+"%"},hline:D.meta.alarm_threshold_pct,hlabel:"alarm "+D.meta.alarm_threshold_pct+"%",series:ser});
+    $("sw").innerHTML=PAT.map(function(n,i){var on=S.p[i]==="1";return'<button class="btn'+(on?' on':'')+'" data-i="'+i+'">'+(i+1)+'  '+n+': <b>'+(on?"ON":"OFF")+'</b></button>'}).join("");
+    Array.prototype.forEach.call($("sw").children,function(b){b.onclick=function(){tog(+b.getAttribute("data-i"))}});
+    $("fh").innerHTML=run?('Day 30 drift score: <span class="drift">'+run[29]+'%</span> <span class="sec">(peak '+Math.max.apply(null,run)+'%)</span>'):'<span class="sec">No run for this combination ('+S.p+'). Try another switch.</span>';
+  }else if(sc==="retention"){
+    var cs=function(p){var r=[];for(var k=1;k<=6;k++)r.push([k,100*Math.pow(p/100,k)]);return r};
+    var p2=Math.max(S.pr-5,50);
+    $("rp").innerHTML=chart({w:1180,h:340,right:150,x0:1,x1:6,y0:0,y1:100,xt:[1,2,3,4,5,6],yt:[0,25,50,75,100],yf:function(v){return v+"%"},series:[{pts:cs(S.pr),color:"#F2F4F7",w:6,label:"p = "+S.pr+"%"},{pts:cs(p2),color:"#9AA4B2",w:6,dash:"10 6",label:"p = "+p2+"%",dy:20}]});
+    $("prv").textContent=S.pr;$("nv").textContent=S.n;
+    $("rd").innerHTML='At p = '+S.pr+'%, after '+S.n+' handoffs <span style="color:#F2F4F7">'+(100*Math.pow(S.pr/100,S.n)).toFixed(0)+'%</span> of the constraints survive.';
+  }else{
+    var a=D.summary.no_fixes,b=D.summary.all_fixes;
+    var rows=[["Above limit refunds approved without a human",a.above_limit_approved_without_human,b.above_limit_approved_without_human,function(v){return v>0?'<span class="breach">'+v+' BREACH</span>':'<span class="ok">'+v+' OK</span>'}],
+      ["p95 latency",a.p95_latency_s,b.p95_latency_s,function(v){return v+" s"}],
+      ["Cost per ticket",a.cost_usd_per_ticket,b.cost_usd_per_ticket,function(v){return"$"+v.toFixed(3)}],
+      ["Replay cost per day, "+D.meta.golden_set_size+" golden cases",a.replay_cost_usd_per_day,b.replay_cost_usd_per_day,function(v){return v?"about $"+v.toFixed(2):"none"}],
+      ["Drift score on day 30",a.final_drift_score_pct,b.final_drift_score_pct,function(v){return'<span class="drift">'+v+'%</span>'}]];
+    $("rs").innerHTML='<table><tr><th>Days 1 to 30</th><th>No fixes'+(S.after?'':' (shown)')+'</th><th>All four patterns'+(S.after?' (shown)':'')+'</th></tr>'+rows.map(function(r){return'<tr><td>'+r[0]+'</td><td style="opacity:'+(S.after?.45:1)+'">'+r[3](r[1])+'</td><td style="opacity:'+(S.after?1:.45)+'">'+r[3](r[2])+'</td></tr>'}).join("")+'</table><div class="hint">The fixes cost about $'+(b.cost_usd_per_ticket-a.cost_usd_per_ticket).toFixed(3)+' more per ticket and '+(b.p95_latency_s-a.p95_latency_s).toFixed(1)+' s more latency.</div>';
+    $("tg").textContent=S.after?"Showing: after (click for before)":"Showing: before (click for after)";
+  }
+}
+function tog(i){var a=S.p.split("");a[i]=a[i]==="1"?"0":"1";S.p=a.join("");update()}
+document.addEventListener("keydown",function(e){
+  if(e.target&&e.target.tagName==="INPUT"&&(e.key==="ArrowLeft"||e.key==="ArrowRight")&&e.target.type!=="range")return;
+  var k=e.key;
+  if(k==="ArrowLeft"||k==="ArrowRight"){if(S.scene==="green"||S.scene==="catch"){S.day=Math.min(30,Math.max(1,S.day+(k==="ArrowRight"?1:-1)));update();e.preventDefault()}}
+  else if(k===" "){if(S.scene==="green"||S.scene==="catch"){togglePlay();e.preventDefault()}}
+  else if(k>="1"&&k<="4"&&S.scene==="fix"){tog(+k-1)}
+  else if(k==="r"||k==="R"){stop();S.day=S.scene==="catch"?1:30;S.p="0000";S.pr=95;S.n=3;S.ev=null;S.reveal=false;S.after=false;scene()}
+  else if((k==="h"||k==="H")&&S.scene==="green"){S.reveal=true;update()}
+});
+window.addEventListener("hashchange",function(){parseHash();scene()});
+function boot(){D=JSON.parse($("embedded").textContent);start()}
+function start(){parseHash();scene()}
+/* Read data/results.json when the page is served over a server. From a double click (file), the fetch is refused and the embedded copy is used. */
+try{fetch("../data/results.json").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){D=j;start()}).catch(function(){})}catch(e){}
+boot();
+})();
+</script>
+</body>
+</html>

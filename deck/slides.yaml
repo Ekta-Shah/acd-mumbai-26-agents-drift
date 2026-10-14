@@ -1,0 +1,343 @@
+# All slide text and speaker notes live here. Numbers on chart and table slides come from data/results.json.
+# Notes shape: script (90 words or fewer), cue, short. Timing comes from "start"; each slide ends where the next starts.
+meta:
+  short_title: "Agents Don't Crash, They Drift"
+  event: "AWS Community Day Mumbai"
+  speaker: "[Speaker name, role]"
+  session_end: "25:00"
+  qa_end: "30:00"
+
+slides:
+  - id: 1
+    start: "0:00"
+    kind: title
+    title: "Agents Don't Crash, They Drift"
+    subtitle: "Guardrails and memory patterns for multi-agent systems on AWS"
+    notes:
+      script: "Welcome. I want to show you a failure that never appears on your dashboards. Nothing crashes. Nothing errors. The agents keep answering, and the answers quietly get worse. By the end you will know how to catch it, and four patterns that stop it. Everything runs on AWS, and everything I show is open to explore."
+      cue: "none"
+      short: "none"
+
+  - id: 2
+    start: "0:20"
+    kind: two_cards
+    results: true
+    title: "Same ticket, different answer"
+    left:
+      day: "DAY 1"
+      ticket: "T-4471  ₹7,200 refund"
+      trace: "resolution: Amount 7,200 is above 5,000. Routing to human approval."
+      outcome: "Sent to a human"
+    right:
+      day: "DAY 30"
+      ticket: "T-4471  ₹7,200 refund"
+      trace: "resolution: Refund approved: 7,200. Customer is eligible."
+      outcome: "Auto approved"
+    notes:
+      script: "Same ticket. A cracked mouse, order of 7,200 rupees, full refund asked. On day 1 the agents did the right thing: the amount is above 5,000, so it goes to a human. Thirty days later, the same ticket is approved automatically. Same rule, same agents, same prompt. Nobody changed a line of policy. So what happened?"
+      cue: "Click once to reveal the Day 30 card."
+      short: "Skip the ticket details and go straight to the click."
+
+  - id: 3
+    start: "1:10"
+    kind: panels
+    results: true
+    title: "Every dashboard was green"
+    panels:
+      - {label: "p95 latency", value: "2.1 s"}
+      - {label: "Error rate", value: "0.0%"}
+      - {label: "Cost per ticket", value: "$0.012"}
+    hidden: {label: "Sent to human", value: "2 of 14"}
+    notes:
+      script: "Here is the dashboard for those thirty days. Latency flat at {{lat_none}} seconds. Zero errors. Cost steady at about {{cost_cents}} cents a ticket. Every panel says healthy. If you run agents in production, this is the screen you would check, and it would tell you everything is fine. But there is one number that was never on any dashboard."
+      cue: "Click to reveal the hidden panel: sent to human, {{sent_last}} of {{hv}}."
+      short: "Name the three green panels in one breath."
+
+  - id: 4
+    start: "2:00"
+    kind: statement
+    title: "Drift is behavior moving away from intent, quietly"
+    lines: ["The agent keeps answering. The decisions get worse.", "Crash: loud.", "Drift: silent."]
+    notes:
+      script: "Let me define drift. Drift is when behavior moves away from intent, quietly. A crash is loud: alarms, pages, a red dashboard. Drift is silent. The agent keeps answering, with confidence, and each answer is a little further from what you meant. You cannot alert on something you do not measure. So first, how does it happen?"
+      cue: "none"
+      short: "Say only: crash is loud, drift is silent."
+
+  - id: 5
+    start: "2:40"
+    kind: hub
+    title: "Four ways agents drift"
+    tiles:
+      - {name: "Goal", sub: "Rule fell out", target: 6}
+      - {name: "Tool", sub: "Units changed", target: 7}
+      - {name: "Memory", sub: "Exception became rule", target: 8}
+      - {name: "Handoff", sub: "Telephone game", target: 9}
+    notes:
+      script: "There are four ways I see agents drift. The goal drifts, when the rule falls out of context. A tool drifts, when an API changes under you. Memory drifts, when one exception becomes a rule. And handoffs drift, like a game of telephone. Each one comes from the same refund desk, so you only learn one story."
+      cue: "Click a tile to open its example. Each example has a Back to hub button."
+      short: "Do goal and memory only. Mention tool and handoff in one line each."
+
+  - id: 6
+    start: "3:10"
+    kind: trace_reveal
+    title: "Goal drift: the rule fell out of context"
+    lines:
+      - "step 3   context: [system] Never approve a refund above 5,000 without human approval."
+      - "step 12  context: [summary] Be helpful and resolve refunds quickly."
+    highlight: 1
+    callout: "The limit is gone."
+    back: true
+    notes:
+      script: "The system prompt says: never approve a refund above 5,000 rupees without human approval. As the ticket history grows, a summarizer compresses older turns. At step 3 the rule is there, word for word. At step 12, the summary kept the tone and dropped the limit. The model is not disobeying. It simply never sees the rule any more."
+      cue: "Click to highlight the missing line."
+      short: "Skip step 3 and go to the click."
+
+  - id: 7
+    start: "4:00"
+    kind: json_compare
+    title: "Tool drift: the API changed its units"
+    before_label: "BEFORE: paise"
+    after_label: "AFTER: rupees"
+    before: '{"order": "88213", "amount": 720000, "currency": "INR"}'
+    after: '{"order": "88213", "amount": 7200,   "currency": "INR"}'
+    agent: "agent   7,200 paise is 72 rupees, well under the limit. Approve."
+    badge: "BREACH"
+    back: true
+    notes:
+      script: "The payments lookup used to return paise. A vendor update switched to rupees and kept the same field name. The prompt still says amounts are in paise. So 7,200 is read as 7,200 paise, which is 72 rupees, well under the limit. Approve. The JSON is valid, the call succeeds, no error is logged. The agent is confidently wrong."
+      cue: "Click to show the agent reading 7200 paise as 72 rupees."
+      short: "Skip the JSON walk through and read the agent line."
+
+  - id: 8
+    start: "4:50"
+    kind: steps_trace
+    title: "Memory drift: one exception became a rule"
+    steps:
+      - label: "Day 9"
+        lines: ["memory write: Customers with 3 or more orders get refunds pre-approved."]
+      - label: "Day 20"
+        lines: ["ticket T-5120, 3 orders, refund 6,400"]
+      - label: "Decision"
+        lines: ["resolution: Memory says pre-approved. Approved 6,400."]
+        badge: "BREACH"
+    back: true
+    notes:
+      script: "On day 9, a supervisor approves a one off refund for a loyal customer. The agent saves a memory: customers with three or more orders get refunds pre-approved. No scope, no expiry. On day 20, a different customer with three orders asks for 6,400. The agent finds the memory and approves. The bug is on day 9, the write, not on day 20."
+      cue: "Three clicks: the write, the ticket, the decision."
+      short: "Show only the write and the decision."
+
+  - id: 9
+    start: "5:40"
+    kind: handoff
+    title: "Handoff drift: the telephone game"
+    hops:
+      - {label: "HOP 1  intake to policy", text: "Rohan, order 88213, cracked mouse, 7,200 refund, delivered 61 days ago, return window is 30 days, customer upset.", lost: ""}
+      - {label: "HOP 2  policy to resolution", text: "Rohan wants a 7,200 refund for a damaged mouse. Upset.", lost: "Lost: 61 days, 30 day window"}
+      - {label: "HOP 3  resolution decides", text: "Approve refund for damaged item.", lost: "Lost: the amount"}
+    back: true
+    notes:
+      script: "Three agents, three messages, each shorter than the last. Hop 1 carries everything: the amount, the delivery age of 61 days, the 30 day return window. Hop 2 keeps the story and loses the dates. Hop 3 loses the amount, so the 5,000 rule can never trigger. Each summary looks reasonable alone. Together they erase the constraints."
+      cue: "Three clicks. Each shows what was lost at that hop."
+      short: "Show hop 1 and hop 3 only."
+
+  - id: 10
+    start: "6:30"
+    kind: chart_retention
+    title: "Multi-agent makes it compound"
+    chart_title: "Constraints kept fall with every handoff"
+    link: {text: "Open the retention calculator", url: "../explorer/index.html#scene=retention&pr=95&n=3"}
+    notes:
+      script: "More agents make this worse, by simple arithmetic. If each handoff keeps a share p of the constraints, after n handoffs you keep p to the power n. At 95 percent per hop, three handoffs keep 86 percent and six keep 74. At 90 percent, six hops keep barely half. Every agent you add is another place to lose the rule."
+      cue: "Optional: open the retention calculator and move the sliders."
+      short: "Skip the explorer. Read two numbers off the chart."
+
+  - id: 11
+    start: "7:00"
+    kind: architecture
+    title: "The demo: a refund desk with three agents"
+    link: {text: "Play run recording", url: "../video/live-run.mp4"}
+    notes:
+      script: "Here is the system I replayed over thirty simulated days. The hard rule: refunds above 5,000 rupees need human approval. Three agents on the Strands Agents SDK, hosted on AgentCore Runtime: intake, policy, resolution. Models and Guardrails through Amazon Bedrock. AgentCore Memory for customer facts. A replay harness that runs a golden set. And Amazon CloudWatch to alert."
+      cue: "Five clicks build the diagram layer by layer."
+      short: "Click straight to the end and name the five parts."
+
+  - id: 12
+    start: "8:00"
+    kind: metrics_vs_drift
+    title: "We measure what dashboards miss"
+    left_items: ["Latency: OK", "Errors: OK", "Cost: OK"]
+    formula: "drift score = 100 x golden cases answered differently / 30"
+    golden: "Golden set: 30 cases with known right answers"
+    notes:
+      script: "Dashboards measure the system. I want to measure the decisions. So I keep a golden set: thirty cases with known right answers, frozen. On a schedule, I replay them through the agents and count how many answers differ from the approved one. That share is the drift score. Zero means nothing changed. Higher means decisions are moving."
+      cue: "Click to reveal the golden set idea."
+      short: "Say the formula in one sentence."
+
+  - id: 13
+    start: "9:00"
+    kind: demo_green
+    results: true
+    title: "Demo 1: everything is green"
+    link: {text: "Open explorer: green scene", url: "../explorer/index.html#scene=green&day=30"}
+    notes:
+      script: "Demo one. This is the explorer. Thirty days of the three metrics that every team watches. Drag the scrubber from day 1 to day 30. Latency flat. Errors at zero. Cost flat. By every standard dashboard, this system is healthy. Hold that thought, because in the next scene we will see the same thirty days again, with the one number we did not look at."
+      cue: "Open the explorer link. Drag the day scrubber from 1 to 30."
+      short: "Do not drag. Say the three metrics and move on."
+
+  - id: 14
+    start: "11:00"
+    kind: demo_catch
+    results: true
+    title: "Demo 2: catching the drift"
+    links:
+      - {text: "Day 9", url: "../explorer/index.html#scene=catch&day=9"}
+      - {text: "Day 14", url: "../explorer/index.html#scene=catch&day=14"}
+      - {text: "Day 24", url: "../explorer/index.html#scene=catch&day=24"}
+    notes:
+      script: "Same thirty days, now the drift score. Flat zero until day 9. Then it climbs, with three jumps. Click day 9: the memory write. Day 14: the goal drops out of the summary and handoffs lose the amount. Day 24: the vendor switches units. Each marker opens the trace and highlights the exact line where it broke. Three causes, found in minutes, not weeks."
+      cue: "Open the explorer. Click the day 9, day 14 and day 24 markers in turn."
+      short: "Open day 14 only."
+
+  - id: 15
+    start: "14:30"
+    kind: demo_fix
+    results: true
+    title: "Demo 3: turning the fixes on"
+    link: {text: "Open explorer: fix scene", url: "../explorer/index.html#scene=fix&p=0000"}
+    notes:
+      script: "Now the four patterns. Four switches, and I can turn them on in any order. Pin the goal: that removes the day 14 drift. Keep memory clean: day 9. Rules outside the model: day 24. Replay on a schedule does not prevent drift, it makes you see it, and fix it within two days. With all four on, the drift score stays at or below {{fix_max}} percent."
+      cue: "Open the explorer. Toggle patterns 1 to 4 one at a time and watch the line."
+      short: "Switch on all four at once and show the result."
+
+  - id: 16
+    start: "17:00"
+    kind: pattern_pin
+    title: "Pattern 1: pin the goal"
+    before: "[summary] Be helpful and resolve refunds quickly."
+    after: "[pinned] Never approve a refund above 5,000 without human approval."
+    mapping:
+      - "Strands Agents SDK: a hook re-injects the goal at each handoff"
+      - "Handoff fields the next agent cannot skip: structured_output_model"
+      - "AgentCore Runtime: hosts each agent"
+    notes:
+      script: "Pattern one: pin the goal. Never let a summarizer own your rules. Keep the hard rule in a pinned block that is re-injected at every handoff. And make handoffs structured, with required fields: amount, delivery age, return window. In the Strands Agents SDK, a hook can re-inject the goal, and a structured output model makes the next agent unable to skip fields."
+      cue: "Click to show the pinned goal."
+      short: "Skip the mapping lines."
+
+  - id: 17
+    start: "18:30"
+    kind: pattern_memory
+    title: "Pattern 2: keep memory clean"
+    rules: ["Validate every write", "Scope per agent and customer", "Expire after 7 days"]
+    trace: "DAY 9 write rejected: policy belongs in the policy store."
+    mapping: "AgentCore Memory: scope with actor and namespace"
+    notes:
+      script: "Pattern two: keep memory clean. Policy lives in a policy store, never in memory. Memory holds facts about a customer, scoped to that customer, and expires. Validate every write. With this, the day 9 entry is rejected, because a policy statement is not a customer fact. In AgentCore Memory you scope long term records by actor and namespace, so one customer's memory cannot become everyone's rule."
+      cue: "none"
+      short: "Show the rejected write and skip the three rules."
+
+  - id: 18
+    start: "20:00"
+    kind: pattern_rules
+    title: "Pattern 3: enforce rules outside the model"
+    code:
+      - "if amount_inr > 5000:"
+      - "    return route_to_human(ticket)"
+      - "return approve(ticket)"
+    guardrail: "Denied topic: unapproved refunds above 5,000"
+    footer: "The check runs in code, not in the prompt."
+    notes:
+      script: "Pattern three: the hard rule does not belong in a prompt. It belongs in code. Three lines, on a typed amount, after the model decides. If the vendor changes units, the type check fails loudly instead of approving quietly. Add a Bedrock Guardrails denied topic as a second layer for the language side. The model proposes. Code disposes."
+      cue: "none"
+      short: "Show the three line check only."
+
+  - id: 19
+    start: "21:00"
+    kind: pattern_replay
+    results: true
+    title: "Pattern 4: replay a golden set on a schedule"
+    flow: ["Schedule", "Replay 30 cases", "DriftScore metric", "Alarm"]
+    alarm_label: "ALARM: day 14"
+    mapping: "Amazon CloudWatch: custom metric DriftScore, alarm above 10%"
+    notes:
+      script: "Pattern four: replay the golden set on a schedule, and after any change to the model, the prompt or the index. Publish the drift score as an Amazon CloudWatch custom metric, and alarm on it. In the replay, the alarm fires on day {{alarm_day}}, the first day the score crosses 10 percent. That is well before the damage would otherwise show up as a customer complaint."
+      cue: "Click to show the alarm firing on day {{alarm_day}}."
+      short: "Skip the flow and show the alarm."
+
+  - id: 20
+    start: "22:00"
+    kind: results_table
+    results: true
+    title: "What it cost and what it bought"
+    link: {text: "Open explorer: results", url: "../explorer/index.html#scene=results"}
+    note_line: "Fixes cost 0.003 USD more per ticket and 0.4 s more latency."
+    notes:
+      script: "Here is the honest bill. Above limit refunds approved without a human: {{breaches_none}} without the patterns, {{breaches_all}} with them. The cost is real. Latency goes from {{lat_none}} to {{lat_all}} seconds. Cost per ticket from {{cost_none}} to {{cost_all}} dollars. And the replay costs about {{replay_cents}} cents a day. For a refund desk, that is cheap. For your system, measure it. {{source_note}}"
+      cue: "Optional: open the explorer results view."
+      short: "Read the first and last rows."
+
+  - id: 21
+    start: "23:00"
+    kind: checklist
+    title: "Five things to do on Monday"
+    items: ["Write down hard rules", "Build a golden set", "Check rules in code", "Scope and expire memory", "Alarm on drift"]
+    qr_label: "QR: repo and explorer"
+    notes:
+      script: "Five things for Monday. One: write down your hard rules, the ones you cannot break. Two: build a golden set of thirty real cases. Three: check hard rules in code, not in prompts. Four: scope and expire memory. Five: alarm on the drift score. The repo and the explorer are behind this code, so you can replay the same thirty days yourself."
+      cue: "none"
+      short: "Read items 2 and 5 only."
+
+  - id: 22
+    start: "24:00"
+    kind: closing
+    title: "Agents don't crash. Measure the drift."
+    sub: "Questions?"
+    notes:
+      script: "To close. Agents rarely crash. They keep answering while their decisions get worse, and a green dashboard will not tell you. Measure the decisions, not just the system. Thank you, and I would love your questions."
+      cue: "Leave this slide up for Q&A."
+      short: "none"
+
+appendix:
+  - id: A1
+    kind: appendix_text
+    title: "Other sources of drift"
+    items: ["Model version updates", "Prompt edits", "A rebuilt retrieval index"]
+    before_after:
+      before: "model v1: Escalates the 7,200 refund to a human."
+      after: "model v2: Approves the 7,200 refund with a goodwill note."
+    footer: "Replay the golden set after any of these."
+    notes:
+      script: "No. Drift also comes from changes you control. A model version update, a one line prompt edit, or a rebuilt retrieval index can all change decisions. Here is the same ticket before and after a model update. The lesson is the same: replay the golden set after any of these changes, not only on a schedule."
+      cue: "none"
+      short: "none"
+
+  - id: A2
+    kind: appendix_steps
+    title: "Build a golden set in one afternoon"
+    items: ["Pick 30 real tickets", "Get an expert answer for each", "Freeze them"]
+    notes:
+      script: "Start small. Pick thirty real tickets, including the awkward ones near your hard rules. Ask an expert for the right answer to each, and write down why. Then freeze them: never edit them to make a test pass. One afternoon, one spreadsheet. That is enough to see drift."
+      cue: "none"
+      short: "none"
+
+  - id: A3
+    kind: appendix_cost
+    title: "Cost and false alarms"
+    items: ["Replay: about {{replay_usd}} USD a day for 30 cases", "Start the alarm at 10 percent", "Tune it after two weeks of data"]
+    notes:
+      script: "In {{run_word}}, replaying thirty cases costs about {{replay_cents}} cents a day. Start the alarm at 10 percent, which is three or four cases differing. After two weeks, look at your false alarms and tune it. A noisy alarm gets ignored, so raise the threshold before you add more cases."
+      cue: "none"
+      short: "none"
+
+  - id: A4
+    kind: appendix_qa
+    title: "Fast answers"
+    qa:
+      - ["Only memory and handoffs?", "No. Model, prompt and index changes too."]
+      - ["Where do I start?", "A 30 case golden set."]
+      - ["What does it cost?", "About {{replay_usd}} USD a day to replay."]
+      - ["Do Guardrails replace code?", "No. Use both. Code is exact."]
+    notes:
+      script: "Quick answers. Only memory and handoffs? No, model, prompt and index changes too. Where to start? A thirty case golden set. Cost? About {{replay_cents}} cents a day to replay, in this run. Do Guardrails replace code checks? No. Use both. Code is exact, and guardrails cover the language side."
+      cue: "none"
+      short: "none"

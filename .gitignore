@@ -1,0 +1,10 @@
+demo/cache/
+demo/out/
+.venv/
+__pycache__/
+.DS_Store
+deck/*.pptx
+deck/*.pdf
+export/
+template/
+video/*.mp4
