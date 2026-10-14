@@ -1,4 +1,4 @@
-"""Writes data/results.json with ILLUSTRATIVE numbers, to the schema in PLAN.md. Fixed seed, fully deterministic.
+"""Writes data/results.json with ILLUSTRATIVE numbers. Fixed seed, fully deterministic.
 
 Story: three causes of drift start on days 9 (memory), 14 (goal and handoff) and 24 (tool units).
 The no-fixes run is the sum of the causes. Pattern runs remove the causes they fix. Pattern 4 (replay and alarm)

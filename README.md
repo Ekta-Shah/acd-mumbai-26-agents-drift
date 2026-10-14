@@ -11,7 +11,6 @@ Code behind the AWS Community Day Mumbai 2026 talk. A small refund desk built fr
 | `data/results.json` | Every number the explorer and deck read. `"source"` is `illustrative`, `stub-rehearsal` or `live-run` |
 | `deck/slides.yaml` | Slide text and speaker notes, with `{{placeholders}}` filled from the results file |
 | `scripts/` | Results generation, explorer and deck builders, run refresh, checks |
-| `PLAN.md` | The original build brief and the live-run addendum |
 
 The slide deck (`.pptx`, PDF, exported PNGs) and its template are not in the repo. `make deck` and `make export` need the template at `template/ACD Mumbai 2026 template.pptx`.
 

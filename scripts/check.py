@@ -1,4 +1,4 @@
-"""Acceptance checks from PLAN.md. Prints PASS or FAIL per check; exits 1 if any fail."""
+"""Acceptance checks for the deck and explorer. Prints PASS or FAIL per check; exits 1 if any fail."""
 import json
 import os
 import re
